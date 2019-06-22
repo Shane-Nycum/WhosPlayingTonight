@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicInTown.Models
+namespace WhosPlayingTonight.Models
 {
     /// <summary>
     /// Provides functionality for getting a list of music-related

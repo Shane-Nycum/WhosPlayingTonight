@@ -1,11 +1,11 @@
 ﻿using Caliburn.Micro;
-using MusicInTown.Models;
+using WhosPlayingTonight.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MusicInTown.ViewModels
+namespace WhosPlayingTonight.ViewModels
 {
     public class ShellViewModel : Screen
     {

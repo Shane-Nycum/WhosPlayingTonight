@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MusicInTown.Properties
+namespace WhosPlayingTonight.Properties
 {
 
 

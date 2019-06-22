@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MusicInTown.Models
+namespace WhosPlayingTonight.Models
 {
     /// <summary>
     /// Provides functionality for streaming song previews using Spotify's API
