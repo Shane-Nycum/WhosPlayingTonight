@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WhosPlayingTonight.ViewModels;
 
 namespace WhosPlayingTonight.Views
 {
@@ -25,6 +26,11 @@ namespace WhosPlayingTonight.Views
             InitializeComponent();
             videoMediaTimeline.Source = new Uri(System.IO.Directory.GetCurrentDirectory().ToString() + @"\Media\concert_video.mp4");
             videoMediaElement.Play();
+
+        }
+
+        private void ListBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
 
         }
     }

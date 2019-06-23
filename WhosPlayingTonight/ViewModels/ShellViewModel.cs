@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WhosPlayingTonight.ViewModels
 {
@@ -12,7 +13,7 @@ namespace WhosPlayingTonight.ViewModels
         private Thread _currentlyPlaying { get; set; }
         private Spotify _thisSpotify = new Spotify();
         private Eventbrite _thisEventbrite = new Eventbrite();
-        private List<Event> _eventsList = new List<Event>();
+        private BindableCollection<Event> _eventsList = new BindableCollection<Event>();
         private string _location;
 
         public Thread CurrentlyPlaying
@@ -51,7 +52,7 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => ThisEventbrite);
             }
         }
-        public List<Event> EventsList
+        public BindableCollection<Event> EventsList
         {
             get
             {
@@ -108,6 +109,13 @@ namespace WhosPlayingTonight.ViewModels
             CurrentlyPlaying.Abort();
             NotifyOfPropertyChange(() => CurrentlyPlaying);
         }
-        
+
+        public async void Search()
+        {
+            await GetNextEventsPage(Location);
+            NotifyOfPropertyChange(() => EventsList);
+
+        }
+
     }
 }
