@@ -110,12 +110,5 @@ namespace WhosPlayingTonight.ViewModels
             NotifyOfPropertyChange(() => CurrentlyPlaying);
         }
 
-        public async void Search()
-        {
-            await GetNextEventsPage(Location);
-            NotifyOfPropertyChange(() => EventsList);
-
-        }
-
     }
 }

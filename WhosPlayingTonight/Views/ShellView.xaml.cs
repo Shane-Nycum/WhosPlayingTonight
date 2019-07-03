@@ -27,6 +27,7 @@ namespace WhosPlayingTonight.Views
             InitializeComponent();
             videoMediaTimeline.Source = new Uri(System.IO.Directory.GetCurrentDirectory().ToString() + @"\Media\concert_video.mp4");
             videoMediaElement.Play();
+            populateSearchRangeComboBox();
 
         }
 
@@ -70,5 +71,22 @@ namespace WhosPlayingTonight.Views
             return foundElement;
         }
 
+        private void populateSearchRangeComboBox()
+        {
+            for (int i = 5; i <= 100; i += 5)
+            {
+                SearchRange.Items.Add(i);
+            }
+            int defaultSearchRangeSelection = 4;
+            SearchRange.SelectedIndex = defaultSearchRangeSelection;
+           
+        }
+
+        private async void Search_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModelInstance = DataContext as ShellViewModel;
+            viewModelInstance.Location = Location.Text;
+            await viewModelInstance.GetNextEventsPage(Location.Text, (int)SearchRange.SelectedValue);
+        }
     }
 }
