@@ -7,7 +7,6 @@
         mc:Ignorable="d"
         Title="ShellView" Height="450" Width="800" WindowStartupLocation="CenterScreen">
 
-
     <Grid>
         <!-- Set background -->
         <Grid.Background>
@@ -53,22 +52,49 @@
 
         <!-- Row 1 -->
         <TextBlock 
-            Text="Enter zip code or city name: " 
+            Text="Search within " 
             Grid.Row="1" 
             Grid.Column="1" 
-            HorizontalAlignment="Right"
+            HorizontalAlignment="Left"
             Foreground="WhiteSmoke"
             Margin="5"
         />
+        <ComboBox
+            Margin="5"
+            x:Name="SearchRange"
+        />
         <TextBox 
-            MinWidth="125" 
+            MinWidth="175" 
             Grid.Row="1" 
             Grid.Column="2" 
             x:Name="Location" 
             HorizontalAlignment="Center"
             Margin="5"
-            Text="{Binding Path=Location, Mode=OneWayToSource}"
-        />
+            Text="{Binding Path=Location, Mode=OneWayToSource}">
+            <TextBox.Style>
+                <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    <Style.Resources>
+                        <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                            <VisualBrush.Visual>
+                                <Label Content="Enter city name or zip code" Foreground="LightGray" />
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Style.Resources>
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+
         <Button
             Margin="5"
             x:Name="Search"
@@ -88,6 +114,7 @@
             ItemsSource="{Binding EventsList}" Margin="10"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+            ScrollViewer.ScrollChanged="EventsListBox_ScrollChanged"
             Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3"
             Background="Transparent" BorderBrush="Transparent"
          >

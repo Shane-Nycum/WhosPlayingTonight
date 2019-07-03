@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -29,9 +30,45 @@ namespace WhosPlayingTonight.Views
 
         }
 
-        private void ListBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        public async void EventsListBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-
+            var listBox = (ListBox)sender;
+            var scrollViewer = GetDescendantByType(listBox, typeof(ScrollViewer)) as ScrollViewer;
+            if (listBox.Items.Count > 0 && scrollViewer.VerticalOffset == scrollViewer.ScrollableHeight)
+            {
+                // Get the viewmodel instance
+                var viewModelInstance = DataContext as ShellViewModel;
+                await viewModelInstance.GetNextEventsPage(viewModelInstance.Location);
+            }
+            
         }
+
+        public static Visual GetDescendantByType(Visual element, Type type)
+        {
+            if (element == null)
+            {
+                return null;
+            }
+            if (element.GetType() == type)
+            {
+                return element;
+            }
+            Visual foundElement = null;
+            if (element is FrameworkElement)
+            {
+                (element as FrameworkElement).ApplyTemplate();
+            }
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
+            {
+                Visual visual = VisualTreeHelper.GetChild(element, i) as Visual;
+                foundElement = GetDescendantByType(visual, type);
+                if (foundElement != null)
+                {
+                    break;
+                }
+            }
+            return foundElement;
+        }
+
     }
 }

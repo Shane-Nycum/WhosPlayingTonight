@@ -32,11 +32,5 @@ namespace WhosPlayingTonight.Models
         /// </summary>
         public string previewUrl { get; set; }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Event()
-        {
-        }
     }
 }
