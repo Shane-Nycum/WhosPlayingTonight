@@ -15,26 +15,25 @@ namespace WhosPlayingTonight.Models
     /// </summary>
     public class Eventbrite
     {
-        const int categoryIDMusic = 103;
-        string oAuthToken = "SS7XVNOG3R7FR6BW7OP3";
-        int nextPage = 1;
-        int pageCount;
+        private const int categoryIDMusic = 103;
+        private string oAuthToken = "SS7XVNOG3R7FR6BW7OP3";
+        private int nextPage = 1;
+        private int pageCount;
+        private string currentLocation;
+        private int currentProximity;
 
-        /// <summary>
-        /// Returns the next page of events in the given geographic area, starting with page 1.
-        /// The list is sorted starting with the soonest event, going forward in time.
-        /// </summary>
-        /// <param name="location"> City name or zip code of the location to search </param>
-        /// <param name="proximity"> Proximity to the given location to search </param>
-        /// <returns> List of Events</returns>
-        public async Task<List<Event>> GetNextEventsList(string location, int proximity = 25)
+        public async Task<List<Event>> GetNewEventsPage (string location, int proximity = 25)
         {
-            // Test to see if all pages have been retrieved
-            if (pageCount != 0 && nextPage > pageCount)
-            {
-                throw new NoMoreEventsPagesException();
-            }
+            nextPage = 1;
+            currentLocation = location;
+            currentProximity = proximity;
+            var eventsList = await GetEventsList(location, proximity, nextPage);
+            nextPage++;
+            return eventsList;
+        }
 
+        private async Task<List<Event>> GetEventsList (string location, int proximity, int pageNumber)
+        {
             // Make the api request
             string urlString = $"https://www.eventbriteapi.com/v3/events/search/?categories={categoryIDMusic}" +
                 $"&location.address={location}&location.within={proximity}mi&expand=venue&sort_by=date&page={nextPage}";
@@ -48,15 +47,34 @@ namespace WhosPlayingTonight.Models
 
             // Parse the response body with the list of events, putting them into a List of Events
             dynamic responseBodyDeserialized = JsonConvert.DeserializeObject(responseBodyJson);
-            
+
             // set the page count equal to the page count returned by Eventbrite for this search
             // increment the nextPage counter
             pageCount = responseBodyDeserialized.pagination.page_count;
-            nextPage++;
-
-            // return the List of Events
             return ConvertToEventList(responseBodyDeserialized);
         }
+
+
+        /// <summary>
+        /// Returns the next page of events in the given geographic area, starting with page 1.
+        /// The list is sorted starting with the soonest event, going forward in time.
+        /// </summary>
+        /// <param name="location"> City name or zip code of the location to search </param>
+        /// <param name="proximity"> Proximity to the given location to search </param>
+        /// <returns> List of Events</returns>
+        public async Task<List<Event>> GetNextEventsPage()
+        {
+            // Test to see if all pages have been retrieved
+            if (pageCount != 0 && nextPage > pageCount)
+            {
+                throw new NoMoreEventsPagesException();
+            }
+            var eventsList = await GetEventsList(currentLocation, currentProximity, nextPage);
+            nextPage++;
+            return eventsList;
+        }
+
+
 
         /// <summary>
         /// Converts the deserialized response body into a List of type Event
@@ -70,15 +88,43 @@ namespace WhosPlayingTonight.Models
             {
                 try
                 {
+                    if (item.name.text != null) {
+                        Event newEvent = new Event();
+                        newEvent.Name = item.name.text;
+                        // Add description
+                        if (item.description.text != null)
+                        {
+                            newEvent.Description = item.description.text;
+                        } else
+                        {
+                            newEvent.Description = "(event description unavailable)";
+                        }
+                        // Add start time
+                        if (item.start.local != null)
+                        {
+                            newEvent.StartTime = item.start.local;
+                        } else
+                        {
+                            newEvent.Description = "(event date/time information unavailable)";
+                        }
+                        // Add venue
+                        if (item.venue.name != null)
+                        {
+                            if (item.venue.address.city != null && item.venue.address.region != null)
+                            {
+                                newEvent.Venue = item.venue.name + " - " + item.venue.address.city + ", " + item.venue.address.region;
+                            } else
+                            {
+                                newEvent.Venue = item.venue.name;
+                            }
 
-                    EventsList.Add(new Event
-                    {
-                        Name = item.name.text,
-                        Description = item.description.text,
-                        StartTime = item.start.local,
-                        Venue = item.venue.name
+                        } else
+                        {
+                            newEvent.Venue = "(event venue information unavailable)";
+                        }
 
-                    });
+                        EventsList.Add(newEvent);
+                    }
                 }
                 catch (Exception) { }
             }

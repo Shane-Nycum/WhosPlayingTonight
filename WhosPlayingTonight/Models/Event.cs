@@ -20,7 +20,7 @@ namespace WhosPlayingTonight.Models
         /// </summary>
         public string Description { get; set; }
         /// <summary>
-        /// Venue that the event is taking place
+        /// Venue where the event is taking place
         /// </summary>
         public string Venue { get; set; }
         /// <summary>
@@ -30,7 +30,7 @@ namespace WhosPlayingTonight.Models
         /// <summary>
         /// Url where a clip of the artist's music can be found
         /// </summary>
-        public string previewUrl { get; set; }
+        public string PreviewUrl { get; set; }
 
     }
 }

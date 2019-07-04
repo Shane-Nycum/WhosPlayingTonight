@@ -14,7 +14,6 @@ namespace WhosPlayingTonight.ViewModels
         private Spotify _thisSpotify = new Spotify();
         private Eventbrite _thisEventbrite = new Eventbrite();
         private BindableCollection<Event> _eventsList = new BindableCollection<Event>();
-        private string _location;
 
         public Thread CurrentlyPlaying
         {
@@ -64,18 +63,7 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => EventsList);
             }
         }
-        public string Location
-        {
-            get
-            {
-                return _location;
-            }
-            set
-            {
-                _location = value;
-                NotifyOfPropertyChange(() => Location);
-            }
-        }
+
 
         public async Task PlayClip(string artistName)
         {
@@ -97,10 +85,34 @@ namespace WhosPlayingTonight.ViewModels
             
         }
 
-        public async Task GetNextEventsPage(string location, int proximity = 25)
+        public async Task GetNextEventsPage()
         {
-            List<Event> nextEventsPage = await ThisEventbrite.GetNextEventsList(location, proximity);
+            List<Event> nextEventsPage;
+            try
+            {
+                nextEventsPage = await ThisEventbrite.GetNextEventsPage();
+            } catch
+            {
+                return;
+            }
+            
             EventsList.AddRange(nextEventsPage);
+            NotifyOfPropertyChange(() => EventsList);
+        }
+
+        public async Task GetNewEventsPage(string location, int proximity = 25)
+        {
+            List<Event> eventsPage;
+            try
+            {
+                eventsPage = await ThisEventbrite.GetNewEventsPage(location, proximity);
+            }
+            catch
+            {
+                return;
+            }
+            EventsList.Clear();
+            EventsList.AddRange(eventsPage);
             NotifyOfPropertyChange(() => EventsList);
         }
         

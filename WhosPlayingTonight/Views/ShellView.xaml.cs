@@ -39,7 +39,7 @@ namespace WhosPlayingTonight.Views
             {
                 // Get the viewmodel instance
                 var viewModelInstance = DataContext as ShellViewModel;
-                await viewModelInstance.GetNextEventsPage(viewModelInstance.Location);
+                await viewModelInstance.GetNextEventsPage();
             }
             
         }
@@ -84,9 +84,10 @@ namespace WhosPlayingTonight.Views
 
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
+            var scrollViewer = GetDescendantByType(EventsListBox, typeof(ScrollViewer)) as ScrollViewer;
+            scrollViewer.ScrollToTop();
             var viewModelInstance = DataContext as ShellViewModel;
-            viewModelInstance.Location = Location.Text;
-            await viewModelInstance.GetNextEventsPage(Location.Text, (int)SearchRange.SelectedValue);
+            await viewModelInstance.GetNewEventsPage(Location.Text, (int)SearchRange.SelectedValue);
         }
     }
 }
