@@ -14,6 +14,7 @@ namespace WhosPlayingTonight.ViewModels
         private Spotify _thisSpotify = new Spotify();
         private Eventbrite _thisEventbrite = new Eventbrite();
         private BindableCollection<Event> _eventsList = new BindableCollection<Event>();
+        private Event _selectedEvent;
 
         public Thread CurrentlyPlaying
         {
@@ -61,6 +62,18 @@ namespace WhosPlayingTonight.ViewModels
             {
                 _eventsList = value;
                 NotifyOfPropertyChange(() => EventsList);
+            }
+        }
+        public Event SelectedEvent
+        {
+            get
+            {
+                return _selectedEvent;
+            }
+            set
+            {
+                _selectedEvent = value;
+                NotifyOfPropertyChange(() => SelectedEvent);
             }
         }
 

@@ -130,6 +130,7 @@
             ScrollViewer.ScrollChanged="EventsListBox_ScrollChanged"
             Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3"
             Background="Transparent" BorderBrush="Transparent"
+            SelectedItem="{Binding Path=SelectedEvent, Mode=OneWayToSource}"
          >
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -143,6 +144,24 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        
+        <!-- Row 4  -->
+        <ScrollViewer
+            
+            Grid.Row="4" 
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            VerticalScrollBarVisibility="Auto"
+        >
 
+            <TextBlock 
+            x:Name="SelectedEvent_Description"
+            TextWrapping="Wrap"
+            HorizontalAlignment="Left"
+            Foreground="WhiteSmoke"
+            Margin="5"
+            />
+
+        </ScrollViewer>
     </Grid>
 </Window>
