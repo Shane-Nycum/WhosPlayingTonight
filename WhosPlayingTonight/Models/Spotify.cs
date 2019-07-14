@@ -40,17 +40,25 @@ namespace WhosPlayingTonight.Models
         /// </returns>
         public async Task<string> GetPreviewUrl(string artistName)
         {
-            // Authorize Spotify API credentials
-            Token token = await auth.DoAuthAsync();
-            SpotifyWebAPI api = new SpotifyWebAPI() { TokenType = token.TokenType, AccessToken = token.AccessToken };
+            try
+            {
+                // Authorize Spotify API credentials
+                Token token = await auth.DoAuthAsync();
+                SpotifyWebAPI api = new SpotifyWebAPI() { TokenType = token.TokenType, AccessToken = token.AccessToken };
 
-            // Get the track from Spotify API
-            artistName = FormatArtistName(artistName);
-            SearchItem item = api.SearchItems(artistName, SearchType.Artist);
-            SeveralTracks tracks = api.GetArtistsTopTracks(item.Artists.Items[0].Id, "US");
-            FullTrack track = api.GetTrack(tracks.Tracks[0].Id);
+                // Get the track from Spotify API
+                artistName = FormatArtistName(artistName);
+                SearchItem item = api.SearchItems(artistName, SearchType.Artist);
+                SeveralTracks tracks = api.GetArtistsTopTracks(item.Artists.Items[0].Id, "US");
+                FullTrack track = api.GetTrack(tracks.Tracks[0].Id);
 
-            return track.PreviewUrl;
+                return track.PreviewUrl;
+            }
+            catch
+            {
+                return "(Spotify preview not available)";
+            }
+
         }
 
         /// <summary>
@@ -65,47 +73,48 @@ namespace WhosPlayingTonight.Models
         public Thread StreamFromUrl(string url)
         {
 
-            if (String.IsNullOrEmpty(url))
-            {
-                throw new StreamNotFoundException();
-            }
-
             var playerThread = new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
-                using (Stream ms = new MemoryStream())
+                try
                 {
-                    using (Stream stream = WebRequest.Create(url)
-                        .GetResponse().GetResponseStream())
+                    using (Stream ms = new MemoryStream())
                     {
-                        byte[] buffer = new byte[32768];
-                        int read;
-                        while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                        using (Stream stream = WebRequest.Create(url)
+                            .GetResponse().GetResponseStream())
                         {
-                            ms.Write(buffer, 0, read);
-                        }
-                    }
-
-                    ms.Position = 0;
-                    using (WaveStream blockAlignedStream =
-                        new BlockAlignReductionStream(
-                            WaveFormatConversionStream.CreatePcmStream(
-                                new Mp3FileReader(ms))))
-                    {
-                        using (WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
-                        {
-                            waveOut.Init(blockAlignedStream);
-                            waveOut.Play();
-                            while (waveOut.PlaybackState == PlaybackState.Playing)
+                            byte[] buffer = new byte[32768];
+                            int read;
+                            while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
                             {
-                                System.Threading.Thread.Sleep(100);
+                                ms.Write(buffer, 0, read);
+                            }
+                        }
+
+                        ms.Position = 0;
+                        using (WaveStream blockAlignedStream =
+                            new BlockAlignReductionStream(
+                                WaveFormatConversionStream.CreatePcmStream(
+                                    new Mp3FileReader(ms))))
+                        {
+                            using (WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
+                            {
+                                waveOut.Init(blockAlignedStream);
+                                waveOut.Play();
+                                while (waveOut.PlaybackState == PlaybackState.Playing)
+                                {
+                                    System.Threading.Thread.Sleep(100);
+                                }
                             }
                         }
                     }
                 }
+                catch { }
+
             });
             playerThread.Start();
             return playerThread;
+
         }
 
         /// <summary>
@@ -124,27 +133,4 @@ namespace WhosPlayingTonight.Models
         }
     }
 
-    /// <summary>
-    /// Custom exception type for when a stream is not found
-    /// </summary>
-    public class StreamNotFoundException : Exception
-    {
-        /// <summary>
-        /// Constructor for when no param is given
-        /// </summary>
-        public StreamNotFoundException() : base("A preview for the artist was not found")
-        {
-        }
-
-        /// <summary>
-        /// Constructor for when a param with a message is given
-        /// </summary>
-        /// <param name="message">
-        /// Message to include with the exception
-        /// </param>
-        public StreamNotFoundException(string message)
-            : base(message)
-        {
-        }
-    }
 }

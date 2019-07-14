@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WhosPlayingTonight.Models;
 using WhosPlayingTonight.ViewModels;
 
 namespace WhosPlayingTonight.Views
@@ -88,6 +89,25 @@ namespace WhosPlayingTonight.Views
             scrollViewer.ScrollToTop();
             var viewModelInstance = DataContext as ShellViewModel;
             await viewModelInstance.GetNewEventsPage(Location.Text, (int)SearchRange.SelectedValue);
+        }
+
+        private void TestSpotify_Click(object sender, RoutedEventArgs e)
+        {
+            Event selectedEvent = (Event)EventsListBox.SelectedItem;
+            var viewModelInstance = DataContext as ShellViewModel;
+            viewModelInstance.PlayPreview(selectedEvent.PreviewUrl);
+        }
+
+        private async void EventsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (EventsListBox.SelectedItem != null)
+            {
+                Event selectedEvent = (Event)EventsListBox.SelectedItem;
+                string previewUrl = await new Spotify().GetPreviewUrl(selectedEvent.Name);
+                selectedEvent.PreviewUrl = previewUrl;
+                MessageBox.Show(previewUrl);
+            }
+            
         }
     }
 }

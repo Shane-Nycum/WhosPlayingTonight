@@ -78,11 +78,10 @@ namespace WhosPlayingTonight.ViewModels
         }
 
 
-        public async Task PlayClip(string artistName)
+        public void PlayPreview(string previewUrl)
         {
             try
             {
-                string previewUrl = await ThisSpotify.GetPreviewUrl(artistName);
                 if (CurrentlyPlaying != null)
                 {
                     if (CurrentlyPlaying.IsAlive)
@@ -91,10 +90,7 @@ namespace WhosPlayingTonight.ViewModels
                     }
                 }
                 CurrentlyPlaying = ThisSpotify.StreamFromUrl(previewUrl);
-            } catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            } catch { }
             
         }
 
