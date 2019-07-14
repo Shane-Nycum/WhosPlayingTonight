@@ -91,7 +91,7 @@ namespace WhosPlayingTonight.Views
             await viewModelInstance.GetNewEventsPage(Location.Text, (int)SearchRange.SelectedValue);
         }
 
-        private void TestSpotify_Click(object sender, RoutedEventArgs e)
+        private void PlaySpotifyPreview_Click(object sender, RoutedEventArgs e)
         {
             Event selectedEvent = (Event)EventsListBox.SelectedItem;
             var viewModelInstance = DataContext as ShellViewModel;
@@ -102,10 +102,21 @@ namespace WhosPlayingTonight.Views
         {
             if (EventsListBox.SelectedItem != null)
             {
+                var viewModelInstance = DataContext as ShellViewModel;
                 Event selectedEvent = (Event)EventsListBox.SelectedItem;
-                string previewUrl = await new Spotify().GetPreviewUrl(selectedEvent.Name);
+                string previewUrl = await viewModelInstance.GetSpotifyPreviewUrl(selectedEvent);
                 selectedEvent.PreviewUrl = previewUrl;
-                MessageBox.Show(previewUrl);
+                if (selectedEvent.PreviewUrl != null && selectedEvent.PreviewUrl != "" && 
+                    selectedEvent.PreviewUrl != "(Spotify preview not available)")
+                {
+                    PlaySpotifyPreview.Visibility = Visibility.Visible;
+                } else
+                {
+                    PlaySpotifyPreview.Visibility = Visibility.Hidden;
+                }
+            } else
+            {
+                PlaySpotifyPreview.Visibility = Visibility.Hidden;
             }
             
         }

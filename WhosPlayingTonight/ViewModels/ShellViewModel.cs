@@ -94,6 +94,12 @@ namespace WhosPlayingTonight.ViewModels
             
         }
 
+        public async Task<string> GetSpotifyPreviewUrl(Event evnt)
+        {
+            string previewUrl = await ThisSpotify.GetPreviewUrl(evnt.Name);
+            return previewUrl;
+        }
+
         public async Task GetNextEventsPage()
         {
             List<Event> nextEventsPage;

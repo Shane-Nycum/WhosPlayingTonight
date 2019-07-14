@@ -164,13 +164,14 @@
             />
 
         </ScrollViewer>
-        <Button 
+        <ToggleButton 
             Grid.Row="4"
             Grid.Column="3"
-            x:Name="TestSpotify"
-            Click="TestSpotify_Click"
+            x:Name="PlaySpotifyPreview"
+            Click="PlaySpotifyPreview_Click"
             MinWidth="75" 
             MinHeight="5"
+            Visibility="Hidden"
         />
     </Grid>
 </Window>
