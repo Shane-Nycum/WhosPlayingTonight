@@ -50,6 +50,7 @@
             <RowDefinition Height="20" />
         </Grid.RowDefinitions>
 
+        
         <!-- Row 1 -->
         <TextBlock 
             Text="Search within" 
@@ -164,6 +165,7 @@
             />
 
         </ScrollViewer>
+        <!--
         <ToggleButton 
             Grid.Row="4"
             Grid.Column="3"
@@ -173,5 +175,64 @@
             MinHeight="5"
             Visibility="Hidden"
         />
+        -->
+
+        <Grid Grid.Column="3" Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            
+            
+        </Grid>
+
+        <Button  
+            Width="50" 
+            Height="50" 
+            Grid.Row="4"
+            Grid.Column="3"
+            x:Name="PlaySpotifyPreview"
+            Click="PlaySpotifyPreview_Click"
+            Visibility="Visible"
+            HorizontalAlignment="Left"
+            
+            
+        >
+            <Button.Template>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Ellipse Fill="WhiteSmoke"/>
+                        <ContentPresenter Content="{TemplateBinding Content}" 
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"/>
+                        <Polygon Points="18,12 18,35 38, 26" Fill="Black"></Polygon>
+                    </Grid>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <Button  
+            Width="50" 
+            Height="50" 
+            Grid.Row="4"
+            Grid.Column="3"
+            x:Name="StopPlayback"
+            Visibility="Visible"
+            HorizontalAlignment="Right"
+            
+        >
+            <Button.Template>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Ellipse Fill="WhiteSmoke"/>
+                        <ContentPresenter Content="{TemplateBinding Content}" 
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"/>
+                        <Polygon Points="15,14 15,34 35,34 35,14 " Fill="Black"></Polygon>
+                    </Grid>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
     </Grid>
 </Window>
