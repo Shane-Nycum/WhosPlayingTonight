@@ -7,6 +7,10 @@
         mc:Ignorable="d"
         Title="ShellView" Height="450" Width="800" WindowStartupLocation="CenterScreen">
 
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+    
     <Grid>
         <!-- Set background -->
         <Grid.Background>
@@ -165,74 +169,67 @@
             />
 
         </ScrollViewer>
-        <!--
-        <ToggleButton 
-            Grid.Row="4"
-            Grid.Column="3"
-            x:Name="PlaySpotifyPreview"
-            Click="PlaySpotifyPreview_Click"
-            MinWidth="75" 
-            MinHeight="5"
-            Visibility="Hidden"
-        />
-        -->
 
+        <!-- Nested grid in row 4, col 3 to place play/stop buttons  -->
         <Grid Grid.Column="3" Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-
-            
-            
-        </Grid>
-
-        <Button  
+            <Grid.RowDefinitions>
+                <RowDefinition Height ="*" />
+            </Grid.RowDefinitions>
+            <Button  
             Width="50" 
             Height="50" 
-            Grid.Row="4"
-            Grid.Column="3"
+            Grid.Row="0"
+            Grid.Column="0"
             x:Name="PlaySpotifyPreview"
             Click="PlaySpotifyPreview_Click"
-            Visibility="Visible"
-            HorizontalAlignment="Left"
-            
-            
-        >
-            <Button.Template>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid>
-                        <Ellipse Fill="WhiteSmoke"/>
-                        <ContentPresenter Content="{TemplateBinding Content}" 
+            Visibility="Hidden"
+            HorizontalAlignment="Right"
+            Margin="5"  
+            >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid>
+                            <Ellipse Fill="WhiteSmoke"/>
+                            <ContentPresenter Content="{TemplateBinding Content}" 
                                           HorizontalAlignment="Center" 
                                           VerticalAlignment="Center"/>
-                        <Polygon Points="18,12 18,35 38, 26" Fill="Black"></Polygon>
-                    </Grid>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+                            <Polygon Points="18,12 18,35 38, 26" Fill="Black"></Polygon>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
 
-        <Button  
+            <Button  
             Width="50" 
             Height="50" 
-            Grid.Row="4"
-            Grid.Column="3"
+            Grid.Row="0"
+            Grid.Column="1"
             x:Name="StopPlayback"
-            Visibility="Visible"
-            HorizontalAlignment="Right"
+            HorizontalAlignment="Left"
+            Margin="5"
+            Visibility="{Binding IsPlayingAudio, Converter={StaticResource BooleanToVisibilityConverter}}"
             
         >
-            <Button.Template>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid>
-                        <Ellipse Fill="WhiteSmoke"/>
-                        <ContentPresenter Content="{TemplateBinding Content}" 
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid>
+                            <Ellipse Fill="WhiteSmoke"/>
+                            <ContentPresenter Content="{TemplateBinding Content}" 
                                           HorizontalAlignment="Center" 
                                           VerticalAlignment="Center"/>
-                        <Polygon Points="15,14 15,34 35,34 35,14 " Fill="Black"></Polygon>
-                    </Grid>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+                            <Polygon Points="15,14 15,34 35,34 35,14 " Fill="Black"></Polygon>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+
+        
+
+        
     </Grid>
 </Window>

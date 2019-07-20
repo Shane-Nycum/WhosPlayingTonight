@@ -61,61 +61,7 @@ namespace WhosPlayingTonight.Models
 
         }
 
-        /// <summary>
-        /// Streams an mp3 from the given URL in a new thread
-        /// </summary>
-        /// <param name="url"> URL where the mp3 file is located </param>
-        /// <returns> Thread that's streaming the mp3 </returns>
-        /// <remarks>
-        /// Uses NAudio library. 
-        /// Solution found at https://stackoverflow.com/questions/184683/play-audio-from-a-stream-using-c-sharp.
-        /// </remarks>
-        public Thread StreamFromUrl(string url)
-        {
-
-            var playerThread = new Thread(() =>
-            {
-                Thread.CurrentThread.IsBackground = true;
-                try
-                {
-                    using (Stream ms = new MemoryStream())
-                    {
-                        using (Stream stream = WebRequest.Create(url)
-                            .GetResponse().GetResponseStream())
-                        {
-                            byte[] buffer = new byte[32768];
-                            int read;
-                            while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
-                            {
-                                ms.Write(buffer, 0, read);
-                            }
-                        }
-
-                        ms.Position = 0;
-                        using (WaveStream blockAlignedStream =
-                            new BlockAlignReductionStream(
-                                WaveFormatConversionStream.CreatePcmStream(
-                                    new Mp3FileReader(ms))))
-                        {
-                            using (WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
-                            {
-                                waveOut.Init(blockAlignedStream);
-                                waveOut.Play();
-                                while (waveOut.PlaybackState == PlaybackState.Playing)
-                                {
-                                    System.Threading.Thread.Sleep(100);
-                                }
-                            }
-                        }
-                    }
-                }
-                catch { }
-
-            });
-            playerThread.Start();
-            return playerThread;
-
-        }
+        
 
         /// <summary>
         /// Takes an artist's name as param, and formats it to query Spotify's API
