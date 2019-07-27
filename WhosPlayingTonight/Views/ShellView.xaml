@@ -186,6 +186,7 @@
             Grid.Column="0"
             x:Name="PlaySpotifyPreview"
             Click="PlaySpotifyPreview_Click"
+            IsEnabled="False"
             Visibility="Hidden"
             HorizontalAlignment="Right"
             Margin="5"  
@@ -211,9 +212,10 @@
             x:Name="StopPlayback"
             HorizontalAlignment="Left"
             Margin="5"
-            Visibility="{Binding IsPlayingAudio, Converter={StaticResource BooleanToVisibilityConverter}}"
+            Visibility="Hidden"
+            IsEnabled="{Binding IsPlayingAudio}"
             
-        >
+            >
                 <Button.Template>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Grid>
@@ -226,6 +228,17 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
+            <TextBlock
+                x:Name="SpotifyPreviewAvailable"
+                Text="Spotify preview unavailable"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Foreground="WhiteSmoke"
+                Visibility="Hidden"
+            >
+                
+            </TextBlock>
         </Grid>
 
         

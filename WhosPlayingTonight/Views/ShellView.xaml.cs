@@ -89,6 +89,15 @@ namespace WhosPlayingTonight.Views
             scrollViewer.ScrollToTop();
             var viewModelInstance = DataContext as ShellViewModel;
             await viewModelInstance.GetNewEventsPage(Location.Text, (int)SearchRange.SelectedValue);
+            if (viewModelInstance.EventsList.Count > 0)
+            {
+                StopPlayback.Visibility = Visibility.Visible;
+                PlaySpotifyPreview.Visibility = Visibility.Visible;
+            } else
+            {
+                StopPlayback.Visibility = Visibility.Hidden;
+                PlaySpotifyPreview.Visibility = Visibility.Hidden;
+            }
         }
 
         private void PlaySpotifyPreview_Click(object sender, RoutedEventArgs e)
@@ -109,14 +118,17 @@ namespace WhosPlayingTonight.Views
                 if (selectedEvent.PreviewUrl != null && selectedEvent.PreviewUrl != "" && 
                     selectedEvent.PreviewUrl != "(Spotify preview not available)")
                 {
-                    PlaySpotifyPreview.Visibility = Visibility.Visible;
+                    PlaySpotifyPreview.IsEnabled = true;
+                    SpotifyPreviewAvailable.Visibility = Visibility.Hidden;
                 } else
                 {
-                    PlaySpotifyPreview.Visibility = Visibility.Hidden;
+                    PlaySpotifyPreview.IsEnabled = false;
+                    SpotifyPreviewAvailable.Visibility = Visibility.Visible;
                 }
             } else
             {
-                PlaySpotifyPreview.Visibility = Visibility.Hidden;
+                PlaySpotifyPreview.IsEnabled = false;
+                SpotifyPreviewAvailable.Visibility = Visibility.Visible;
             }
             
         }
