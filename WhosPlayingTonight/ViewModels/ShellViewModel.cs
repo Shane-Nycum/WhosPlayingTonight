@@ -11,11 +11,15 @@ using NAudio.Wave;
 
 namespace WhosPlayingTonight.ViewModels
 {
-    public class ShellViewModel : Screen
+    /// <summary>
+    /// ViewModel class. Inherits from PropertyChangedBase, 
+    /// which provides a lambda-based NotifyOfPropertyChange method
+    /// </summary>
+    public class ShellViewModel : PropertyChangedBase
     {
         private Thread _currentlyPlaying;
-        private Spotify _thisSpotify = new Spotify();
-        private Eventbrite _thisEventbrite = new Eventbrite();
+        private Spotify _spotify = new Spotify();
+        private Eventbrite _eventbrite = new Eventbrite();
         private BindableCollection<Event> _eventsList = new BindableCollection<Event>();
         private Event _selectedEvent;
         private bool _isPlayingAudio;
@@ -32,28 +36,28 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => CurrentlyPlaying);
             }
         }
-        private Spotify ThisSpotify
+        private Spotify Spotify
         {
             get
             {
-                return _thisSpotify;
+                return _spotify;
             }
             set
             {
-                _thisSpotify = value;
-                NotifyOfPropertyChange(() => ThisSpotify);
+                _spotify = value;
+                NotifyOfPropertyChange(() => Spotify);
             }
         }
-        private Eventbrite ThisEventbrite
+        private Eventbrite Eventbrite
         {
             get
             {
-                return _thisEventbrite;
+                return _eventbrite;
             }
             set
             {
-                _thisEventbrite = value;
-                NotifyOfPropertyChange(() => ThisEventbrite);
+                _eventbrite = value;
+                NotifyOfPropertyChange(() => Eventbrite);
             }
         }
         public BindableCollection<Event> EventsList
@@ -100,23 +104,20 @@ namespace WhosPlayingTonight.ViewModels
         }
         public void PlayPreview(string previewUrl)
         {
-            try
+            if (CurrentlyPlaying != null)
             {
-                if (CurrentlyPlaying != null)
+                if (CurrentlyPlaying.IsAlive)
                 {
-                    if (CurrentlyPlaying.IsAlive)
-                    {
-                        StopPlayback();
-                    }
+                    StopPlayback();
                 }
-                CurrentlyPlaying = StreamFromUrl(previewUrl);
-            } catch { }
-            
+            }
+            CurrentlyPlaying = StreamFromUrl(previewUrl);
+
         }
 
         public async Task<string> GetSpotifyPreviewUrl(Event evnt)
         {
-            string previewUrl = await ThisSpotify.GetPreviewUrl(evnt.Name);
+            string previewUrl = await Spotify.GetPreviewUrl(evnt.Name);
             return previewUrl;
         }
 
@@ -125,12 +126,13 @@ namespace WhosPlayingTonight.ViewModels
             List<Event> nextEventsPage;
             try
             {
-                nextEventsPage = await ThisEventbrite.GetNextEventsPage();
-            } catch
+                nextEventsPage = await Eventbrite.GetNextEventsPage();
+            }
+            catch
             {
                 return;
             }
-            
+
             EventsList.AddRange(nextEventsPage);
             NotifyOfPropertyChange(() => EventsList);
         }
@@ -140,7 +142,7 @@ namespace WhosPlayingTonight.ViewModels
             List<Event> eventsPage;
             try
             {
-                eventsPage = await ThisEventbrite.GetNewEventsPage(location, proximity);
+                eventsPage = await Eventbrite.GetNewEventsPage(location, proximity);
             }
             catch
             {
@@ -150,7 +152,7 @@ namespace WhosPlayingTonight.ViewModels
             EventsList.AddRange(eventsPage);
             NotifyOfPropertyChange(() => EventsList);
         }
-        
+
         public void StopPlayback()
         {
             CurrentlyPlaying.Abort();
