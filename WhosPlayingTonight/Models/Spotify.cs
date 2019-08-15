@@ -1,16 +1,9 @@
-﻿using NAudio.Wave;
-using SpotifyAPI.Web;
+﻿using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web.Enums;
 using SpotifyAPI.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace WhosPlayingTonight.Models
 {
@@ -24,11 +17,12 @@ namespace WhosPlayingTonight.Models
     {
         /// <summary>
         /// Credentials for accessing Spotify's API
+        /// Credentials are stored in an xml file outside of source control
         /// </summary>
-        private static ClientCredentialsAuth auth = new ClientCredentialsAuth
+        private readonly ClientCredentialsAuth auth = new ClientCredentialsAuth
         {
-            ClientId = "5abfb22481924b5e91caea93f203b985",
-            ClientSecret = "27af275f285f40cbb5e48d3d3f4237eb"
+            ClientId = ConfigurationManager.AppSettings["spotifyClientId"],
+            ClientSecret = ConfigurationManager.AppSettings["spotifySecret"]
         };
 
         /// <summary>
@@ -74,7 +68,6 @@ namespace WhosPlayingTonight.Models
         /// </returns>
         private string FormatArtistName(string artistName)
         {
-            string trimArtistName = artistName.Trim();
             return artistName.Replace(" ", "+");
         }
     }

@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace WhosPlayingTonight.Models
 {
@@ -15,24 +13,43 @@ namespace WhosPlayingTonight.Models
     /// </summary>
     public class Eventbrite
     {
+        /// Eventbrite category ID for music events 
         private const int categoryIDMusic = 103;
-        private string oAuthToken = "SS7XVNOG3R7FR6BW7OP3";
+        /// OAuth Token for Eventbrite API. Stored in an XML file outside source control
+        private readonly string oAuthToken = ConfigurationManager.AppSettings["eventbriteSecret"];
+        /// The next events page to get from Eventbrite API
         private int nextPage = 1;
+        /// Total number of event pages available for the current search
         private int pageCount;
+        /// Location for the current search
         private string currentLocation;
+        /// Proximity for the current search
         private int currentProximity;
 
+        /// <summary>
+        /// Queries Eventbrite API for music events in a given proximity of the given location.
+        /// Returns the first page of results.
+        /// </summary>
+        /// <param name="location"> Location to search </param>
+        /// <param name="proximity"> Proximity in miles to the given location to search </param>
+        /// <returns> First page of Eventbrite music events </returns>
         public async Task<List<Event>> GetNewEventsPage (string location, int proximity = 25)
         {
             nextPage = 1;
             currentLocation = location;
             currentProximity = proximity;
-            var eventsList = await GetEventsList(location, proximity, nextPage);
+            var eventsList = await GetEventsList(location, proximity);
             nextPage++;
             return eventsList;
         }
 
-        private async Task<List<Event>> GetEventsList (string location, int proximity, int pageNumber)
+        /// <summary>
+        /// Returns the next page of events (which is tracked by nextPage) for the given location / proximity
+        /// </summary>
+        /// <param name="location"> Location to search </param>
+        /// <param name="proximity">Proximity in miles to the given location to search </param>
+        /// <returns> List of Events </returns>
+        private async Task<List<Event>> GetEventsList (string location, int proximity)
         {
             // Make the api request
             string urlString = $"https://www.eventbriteapi.com/v3/events/search/?categories={categoryIDMusic}" +
@@ -56,7 +73,7 @@ namespace WhosPlayingTonight.Models
 
 
         /// <summary>
-        /// Returns the next page of events in the given geographic area, starting with page 1.
+        /// Returns the next page of events in the given geographic area
         /// The list is sorted starting with the soonest event, going forward in time.
         /// </summary>
         /// <param name="location"> City name or zip code of the location to search </param>
@@ -69,7 +86,7 @@ namespace WhosPlayingTonight.Models
             {
                 throw new NoMoreEventsPagesException();
             }
-            var eventsList = await GetEventsList(currentLocation, currentProximity, nextPage);
+            var eventsList = await GetEventsList(currentLocation, currentProximity);
             nextPage++;
             return eventsList;
         }
@@ -89,8 +106,7 @@ namespace WhosPlayingTonight.Models
                 try
                 {
                     if (item.name.text != null) {
-                        Event newEvent = new Event();
-                        newEvent.Name = item.name.text;
+                        Event newEvent = new Event() { Name = item.name.text };
                         // Add description
                         if (item.description.text != null)
                         {

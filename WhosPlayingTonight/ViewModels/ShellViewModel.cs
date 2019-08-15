@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using WhosPlayingTonight.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,13 +16,22 @@ namespace WhosPlayingTonight.ViewModels
     /// </summary>
     public class ShellViewModel : PropertyChangedBase
     {
+        /// Backing field for CurrentlyPlaying property
         private Thread _currentlyPlaying;
+        /// Backing field for Spotify property
         private Spotify _spotify = new Spotify();
+        /// Backing field for Eventbrite property
         private Eventbrite _eventbrite = new Eventbrite();
+        /// Backing field for EventsList property
         private BindableCollection<Event> _eventsList = new BindableCollection<Event>();
+        /// Backing field for SelectedEvent property
         private Event _selectedEvent;
+        /// Backing field for IsPlayingAudio property
         private bool _isPlayingAudio;
 
+        /// <summary>
+        /// Thread that plays the Spotify artist preview
+        /// </summary>
         public Thread CurrentlyPlaying
         {
             get
@@ -36,6 +44,9 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => CurrentlyPlaying);
             }
         }
+        /// <summary>
+        /// Instance of Spotify class, which is used to get artist preview clips
+        /// </summary>
         private Spotify Spotify
         {
             get
@@ -48,6 +59,9 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => Spotify);
             }
         }
+        /// <summary>
+        /// Instance of Eventbrite class, which is used to get the list of music events
+        /// </summary>
         private Eventbrite Eventbrite
         {
             get
@@ -60,6 +74,9 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => Eventbrite);
             }
         }
+        /// <summary>
+        /// List of Events returned by the user's search to display on the UI
+        /// </summary>
         public BindableCollection<Event> EventsList
         {
             get
@@ -72,6 +89,9 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => EventsList);
             }
         }
+        /// <summary>
+        /// The Event currently selected by the user on the UI
+        /// </summary>
         public Event SelectedEvent
         {
             get
@@ -84,7 +104,9 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => SelectedEvent);
             }
         }
-
+        /// <summary>
+        /// True if audio is currently being played
+        /// </summary>
         public bool IsPlayingAudio
         {
             get
@@ -97,11 +119,17 @@ namespace WhosPlayingTonight.ViewModels
                 NotifyOfPropertyChange(() => IsPlayingAudio);
             }
         }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ShellViewModel()
         {
             IsPlayingAudio = false;
         }
+        /// <summary>
+        /// Plays the audio clip at the given URL
+        /// </summary>
+        /// <param name="previewUrl"> URL of the mp3 file to play</param>
         public void PlayPreview(string previewUrl)
         {
             if (CurrentlyPlaying != null)
@@ -115,12 +143,21 @@ namespace WhosPlayingTonight.ViewModels
 
         }
 
+        /// <summary>
+        /// Returns a Spotify URL at which an mp3 preview for the artist of the given Event is found
+        /// </summary>
+        /// <param name="evnt"> Event for which to get a Spotify preview URL </param>
+        /// <returns> Spotify preview URL </returns>
         public async Task<string> GetSpotifyPreviewUrl(Event evnt)
         {
             string previewUrl = await Spotify.GetPreviewUrl(evnt.Name);
             return previewUrl;
         }
 
+        /// <summary>
+        /// Get the next page of events for the current search and appends it to EventsList
+        /// </summary>
+        /// <returns> Task which is getting the events page asynchronously </returns>
         public async Task GetNextEventsPage()
         {
             List<Event> nextEventsPage;
@@ -128,7 +165,7 @@ namespace WhosPlayingTonight.ViewModels
             {
                 nextEventsPage = await Eventbrite.GetNextEventsPage();
             }
-            catch
+            catch (Eventbrite.NoMoreEventsPagesException)
             {
                 return;
             }
@@ -137,6 +174,12 @@ namespace WhosPlayingTonight.ViewModels
             NotifyOfPropertyChange(() => EventsList);
         }
 
+        /// <summary>
+        /// Clears EventsList and populates it with a new page of events for the given location / proximity
+        /// </summary>
+        /// <param name="location"> Location to search </param>
+        /// <param name="proximity"> Proximity in miles to the given location to search </param>
+        /// <returns> Task which is getting the events page asynchronously </returns>
         public async Task GetNewEventsPage(string location, int proximity = 25)
         {
             List<Event> eventsPage;
@@ -144,8 +187,9 @@ namespace WhosPlayingTonight.ViewModels
             {
                 eventsPage = await Eventbrite.GetNewEventsPage(location, proximity);
             }
-            catch
+            catch (System.Net.WebException)
             {
+                MessageBox.Show("No results found for your search. Check your internet location and city name / zip code");
                 return;
             }
             EventsList.Clear();
@@ -153,6 +197,9 @@ namespace WhosPlayingTonight.ViewModels
             NotifyOfPropertyChange(() => EventsList);
         }
 
+        /// <summary>
+        /// Stops playback of audio that is currently playing
+        /// </summary>
         public void StopPlayback()
         {
             CurrentlyPlaying.Abort();
