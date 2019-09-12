@@ -1,4 +1,4 @@
-# WhosPlayingTonight
+# Who's Playing Tonight
 Welcome to Who's Playing Tonight! 
 This is a Windows desktop app that will let you search for music events in your area and listen to previews of the artists, all in the same view.
 
