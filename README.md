@@ -7,7 +7,7 @@ This is a Windows desktop app that will let you search for music events in your 
 The events are sourced from Eventbrite, and the artist previews are streamed from Spotify.
 
 To use the app, you'll need to get your own API keys from Eventbrite and Spotify.
-Save them to your machine them in an XML file that looks like the following:
+Save them to your machine in an XML file that looks like the following:
 ```xml
 <root>
     <secrets ver="1.0">
